@@ -13,9 +13,8 @@ app.get('/', (req, res) => {
 app.get('/api/:date', (req, res) => {
     
     const userInput = req.params.date;
-
     const d = new Date(userInput);
-
+    
     if (d === 'Invalid Date') {
         res.json({
             error: 'invalid date',
@@ -24,9 +23,25 @@ app.get('/api/:date', (req, res) => {
     } else {
 
         if (typeof Number(userInput) === 'number') {
+            
             // get unix
+            const unixTime = new Date(userInput * 1000);
+            const month = unixTime.getUTCMonth();
+            const date = unixTime.getUTCDate();
+            const year = unixTime.getUTCFullYear();
+
+            res.json({
+                unix: userInput,
+                date: `${month}/${date}/${year}`
+            });
         } else {
+            
             // get readable date
+            const unix = new Date(userInput).getTime() / 1000;
+            res.json({
+                unix,
+                date: userInput
+            });
         }
         
         
