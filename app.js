@@ -13,51 +13,45 @@ app.get('/', (req, res) => {
 app.get('/api/:date', (req, res) => {
     
     const userInput = req.params.date;
-    const d = new Date(userInput);
-    
-    if (d === 'Invalid Date') {
-        res.json({
-            error: 'invalid date',
-            userInput
-        });
-    } else {
-
-        if (typeof Number(userInput) === 'number') {
-            
-            // get unix
-            const unixTime = new Date(userInput * 1000);
-            const month = unixTime.getUTCMonth();
-            const date = unixTime.getUTCDate();
-            const year = unixTime.getUTCFullYear();
-
+    const months = require('./months');
+    const errorRes = {
+        status: 'error',
+        message: 'invalid date',
+        userInput
+    };
+        
+    if ( isNaN(Number(userInput / 1000)) ) {
+        // get unix
+        const unixTime  = new Date(userInput / 1000);
+        const month     = months[unixTime.getUTCMonth()];
+        const date      = unixTime.getUTCDate();
+        const year      = unixTime.getUTCFullYear();
+        
+        if (isNaN(month)) {
+            res.json(errorRes);
+        } else {
             res.json({
                 unix: userInput,
-                date: `${month}/${date}/${year}`
+                date: `${month} ${date}, ${year}`
             });
+        }
+
+    } else {            
+        // get readable date
+        const unix = new Date(userInput).getTime() / 1000;
+        
+        if (isNaN(unix)) {
+            res.json(errorRes);
         } else {
-            
-            // get readable date
-            const unix = new Date(userInput).getTime() / 1000;
             res.json({
                 unix,
                 date: userInput
             });
         }
-        
-        
     }
-    
-    res.end('hello');
+
 });
 
 
 const port = 3000;
 app.listen(port, () => { console.log(`Now listening to Port: ${port}`) });
-
-const d = new Date();
-
-console.log(d);
-// const unix = d.getTime() / 1000;
-
-// const foo = new Date(unix * 1000);
-// console.log(foo.getUTCMonth(), foo.getUTCDate(), foo.getUTCFullYear());
