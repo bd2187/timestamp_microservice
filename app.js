@@ -20,14 +20,14 @@ app.get('/api/:date', (req, res) => {
         userInput
     };
         
-    if ( isNaN(Number(userInput / 1000)) ) {
+    if ( !isNaN(userInput) ) {
         // get unix
-        const unixTime  = new Date(userInput / 1000);
+        const unixTime  = new Date(userInput * 1000);
         const month     = months[unixTime.getUTCMonth()];
         const date      = unixTime.getUTCDate();
         const year      = unixTime.getUTCFullYear();
         
-        if (isNaN(month)) {
+        if (isNaN(date)) {
             res.json(errorRes);
         } else {
             res.json({
